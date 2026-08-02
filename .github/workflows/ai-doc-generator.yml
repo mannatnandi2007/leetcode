@@ -1,0 +1,35 @@
+name: AI LeetCode Documentation Generator
+
+on:
+  push:
+    paths:
+      - '**/*.py' # Triggers when python files are pushed
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install google-genai
+
+      - name: Run AI Document Generator
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python .github/scripts/generate_docs.py
+
+      - name: Commit and Push Generated Docs
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs(ai): auto-generate problem analysis and complexity"
+          file_pattern: "**/*.md"
